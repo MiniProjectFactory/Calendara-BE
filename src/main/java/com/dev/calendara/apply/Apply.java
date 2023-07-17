@@ -29,5 +29,5 @@ public class Apply {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "appointment_id")
-    private Appointment appointmentId;
+    private Appointment appointment;
 }
