@@ -1,4 +1,4 @@
-package com.dev.calendara.user;
+package com.dev.calendara.member;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
-public class User {
+public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
