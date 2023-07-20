@@ -8,12 +8,16 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class AvailableTime {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,8 +31,14 @@ public class AvailableTime {
     @JoinColumn(name = "appointment_id")
     private Appointment appointment;
 
+    @Builder
+    public AvailableTime(LocalDateTime availableStartTime, LocalDateTime availableEndTime) {
+        this.availableStartTime = availableStartTime;
+        this.availableEndTime = availableEndTime;
+    }
+
     public void addAvailableTime(Appointment appointment) {
-        if (this.appointment != appointment) {
+        if (this.appointment != null) {
             this.appointment.getAvailableTimes().remove(this);
         }
         this.appointment = appointment;
