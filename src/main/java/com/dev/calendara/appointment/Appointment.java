@@ -34,7 +34,7 @@ public class Appointment {
     private Long hostId;
 
     @Column(nullable = false)
-    private LocalTime meetingDuration;
+    private int meetingDuration;
 
     @Column(nullable = false)
     private LocalDate meetingStartDate;
@@ -49,7 +49,7 @@ public class Appointment {
     private final List<Apply> applies = new ArrayList<>();
 
     @Builder
-    public Appointment(String title, Long hostId, LocalTime meetingDuration, LocalDate meetingStartDate, LocalDate meetingEndDate) {
+    public Appointment(String title, Long hostId, int meetingDuration, LocalDate meetingStartDate, LocalDate meetingEndDate) {
         this.title = title;
         this.hostId = hostId;
         this.meetingDuration = meetingDuration;
