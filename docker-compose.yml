@@ -1,0 +1,17 @@
+version: "3"
+services:
+  history-db:
+    platform: linux/amd64 # mac m1 관련 옵션
+    image: mysql:latest
+    container_name: calendara
+    restart: always
+    ports:
+      - 13306:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=local
+      - MYSQL_DATABASE=calendara
+      - MYSQL_USER=local
+      - MYSQL_PASSWORD=local
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
