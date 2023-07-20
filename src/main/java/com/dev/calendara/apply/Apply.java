@@ -30,4 +30,12 @@ public class Apply {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "appointment_id")
     private Appointment appointment;
+
+    public void applyAppointment(Appointment appointment) {
+        if (this.appointment != appointment) {
+            this.appointment.getApplies().remove(this);
+        }
+        this.appointment = appointment;
+        appointment.getApplies().add(this);
+    }
 }

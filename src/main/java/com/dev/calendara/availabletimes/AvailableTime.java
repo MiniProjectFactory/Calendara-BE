@@ -26,4 +26,12 @@ public class AvailableTime {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "appointment_id")
     private Appointment appointment;
+
+    public void addAvailableTime(Appointment appointment) {
+        if (this.appointment != appointment) {
+            this.appointment.getAvailableTimes().remove(this);
+        }
+        this.appointment = appointment;
+        appointment.addAvailableTime(this);
+    }
 }
