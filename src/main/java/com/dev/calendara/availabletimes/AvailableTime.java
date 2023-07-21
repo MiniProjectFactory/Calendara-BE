@@ -13,6 +13,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -41,7 +42,16 @@ public class AvailableTime {
         if (this.appointment != null) {
             this.appointment.getAvailableTimes().remove(this);
         }
+        validateAvailableTimes(appointment);
         this.appointment = appointment;
         appointment.addAvailableTime(this);
+    }
+
+    private void validateAvailableTimes(Appointment appointment) {
+        LocalDate meetingStartDate = appointment.getMeetingStartDate();
+        LocalDate meetingEndDate = appointment.getMeetingEndDate();
+        if (meetingStartDate.atStartOfDay().isAfter(availableStartTime) || meetingEndDate.atTime(23, 59, 59).isBefore(availableEndTime)) {
+            throw new RuntimeException("미팅 가능 시간대는 미팅 기간내에 포함되어야 합니다.");
+        }
     }
 }

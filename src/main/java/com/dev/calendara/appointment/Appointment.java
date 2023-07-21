@@ -15,7 +15,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,11 +49,18 @@ public class Appointment {
 
     @Builder
     public Appointment(String title, Long hostId, int meetingDuration, LocalDate meetingStartDate, LocalDate meetingEndDate) {
+        validateDateRange(meetingStartDate, meetingEndDate);
         this.title = title;
         this.hostId = hostId;
         this.meetingDuration = meetingDuration;
         this.meetingStartDate = meetingStartDate;
         this.meetingEndDate = meetingEndDate;
+    }
+
+    private void validateDateRange(LocalDate meetingStartDate, LocalDate meetingEndDate) {
+        if (meetingStartDate.isAfter(meetingEndDate)) {
+            throw new RuntimeException("종료 날짜는 시작 날짜보다 이후이어야 합니다.");
+        }
     }
 
     public void addAvailableTime(AvailableTime availableTime) {
