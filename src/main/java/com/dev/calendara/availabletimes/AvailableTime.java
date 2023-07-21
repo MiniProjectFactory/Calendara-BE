@@ -1,6 +1,8 @@
 package com.dev.calendara.availabletimes;
 
 import com.dev.calendara.appointment.Appointment;
+import com.dev.calendara.common.exception.custom.BusinessException;
+import com.dev.calendara.common.exception.dto.ErrorMessage;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -51,7 +53,7 @@ public class AvailableTime {
         LocalDate meetingStartDate = appointment.getMeetingStartDate();
         LocalDate meetingEndDate = appointment.getMeetingEndDate();
         if (meetingStartDate.atStartOfDay().isAfter(availableStartTime) || meetingEndDate.atTime(23, 59, 59).isBefore(availableEndTime)) {
-            throw new RuntimeException("미팅 가능 시간대는 미팅 기간내에 포함되어야 합니다.");
+            throw new BusinessException(ErrorMessage.INVALID_AVAILABLE_TIME);
         }
     }
 }

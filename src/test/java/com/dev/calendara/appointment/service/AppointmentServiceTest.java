@@ -3,6 +3,7 @@ package com.dev.calendara.appointment.service;
 import com.dev.calendara.appointment.controller.dto.AppointmentCreateRequest;
 import com.dev.calendara.appointment.controller.dto.AvailableTimeRequest;
 import com.dev.calendara.appointment.service.dto.AppointmentCreateResponse;
+import com.dev.calendara.common.exception.custom.BusinessException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,8 +107,8 @@ class AppointmentServiceTest {
 
         // When Then
         assertThatThrownBy(() -> appointmentService.createAppointment(createRequest))
-                .isInstanceOf(RuntimeException.class)
-                .hasMessage("종료 날짜는 시작 날짜보다 이후이어야 합니다.");
+                .isInstanceOf(BusinessException.class)
+                .hasMessage("회의 신청 기간을 잘못 설정했습니다.");
     }
 
     @Test
@@ -143,7 +144,7 @@ class AppointmentServiceTest {
 
         // When Then
         assertThatThrownBy(() -> appointmentService.createAppointment(createRequest))
-                .isInstanceOf(RuntimeException.class)
-                .hasMessage("미팅 가능 시간대는 미팅 기간내에 포함되어야 합니다.");
+                .isInstanceOf(BusinessException.class)
+                .hasMessage("미팅 가능한 시간대는 미팅 기간내에 포함되어야 합니다.");
     }
 }

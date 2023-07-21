@@ -2,6 +2,8 @@ package com.dev.calendara.appointment;
 
 import com.dev.calendara.apply.Apply;
 import com.dev.calendara.availabletimes.AvailableTime;
+import com.dev.calendara.common.exception.custom.BusinessException;
+import com.dev.calendara.common.exception.dto.ErrorMessage;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -59,7 +61,7 @@ public class Appointment {
 
     private void validateDateRange(LocalDate meetingStartDate, LocalDate meetingEndDate) {
         if (meetingStartDate.isAfter(meetingEndDate)) {
-            throw new RuntimeException("종료 날짜는 시작 날짜보다 이후이어야 합니다.");
+            throw new BusinessException(ErrorMessage.INVALID_APPOINTMENT_DATE_RANGE);
         }
     }
 
