@@ -4,19 +4,20 @@ import com.dev.calendara.appointment.Appointment;
 import com.dev.calendara.appointment.controller.dto.AppointmentCreateRequest;
 import com.dev.calendara.appointment.service.AppointmentService;
 import com.dev.calendara.appointment.service.dto.AppointmentCreateResponse;
+import com.dev.calendara.availabletimes.AvailableTime;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -26,9 +27,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@Transactional
 @AutoConfigureMockMvc
-@SpringBootTest
+@WebMvcTest(AppointmentController.class)
 @ActiveProfiles("test")
 class AppointmentControllerMockTest {
 
@@ -46,6 +46,8 @@ class AppointmentControllerMockTest {
     void createAppointment() throws Exception {
         // Given
         Appointment appointment = new Appointment("test", 3L, 30, LocalDate.of(2023, 7, 22), LocalDate.of(2023, 7, 30));
+        AvailableTime availableTime = new AvailableTime(LocalDateTime.of(2023, 7, 24, 10, 0), LocalDateTime.of(2023, 7, 24, 12, 0));
+        availableTime.addAvailableTime(appointment);
         AppointmentCreateResponse createResponse = AppointmentCreateResponse.of(appointment);
         when(appointmentService.createAppointment(any())).thenReturn(createResponse);
 
