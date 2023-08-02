@@ -1,14 +1,9 @@
 package com.dev.calendara.apply;
 
 import com.dev.calendara.appointment.Appointment;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -26,7 +21,7 @@ public class Apply {
 
     private LocalDateTime applyEndTime;
 
-    private Long userId;
+    private Long memberId;
 
     private String confirmYn;
 
@@ -34,11 +29,20 @@ public class Apply {
     @JoinColumn(name = "appointment_id")
     private Appointment appointment;
 
-    public void applyAppointment(Appointment appointment) {
+    @Builder
+    public Apply(LocalDateTime applyStartTime, LocalDateTime applyEndTime, Long memberId, String confirmYn, Appointment appointment) {
+        this.applyStartTime = applyStartTime;
+        this.applyEndTime = applyEndTime;
+        this.memberId = memberId;
+        this.confirmYn = confirmYn;
+        addApply(appointment);
+    }
+
+    public void addApply(Appointment appointment) {
         if (this.appointment != null) {
             this.appointment.getApplies().remove(this);
         }
         this.appointment = appointment;
-        appointment.getApplies().add(this);
+        appointment.addApply(this);
     }
 }

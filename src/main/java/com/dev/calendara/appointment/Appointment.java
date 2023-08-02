@@ -68,4 +68,8 @@ public class Appointment {
     public void addAvailableTime(AvailableTime availableTime) {
         availableTimes.add(availableTime);
     }
+
+    public void addApply(Apply apply) {
+        applies.add(apply);
+    }
 }
