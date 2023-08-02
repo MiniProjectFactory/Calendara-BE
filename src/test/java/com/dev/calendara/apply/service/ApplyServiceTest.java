@@ -34,7 +34,7 @@ class ApplyServiceTest {
     @MockBean
     private AppointmentRepository appointmentRepository;
 
-    @DisplayName("사용자가 미팅 정보를 작성 후 신청할 수 있다.")
+    @DisplayName("게스트가 미팅 정보를 작성 후 신청할 수 있다.")
     @Test
     void applyAppointment() {
         // given
@@ -64,7 +64,7 @@ class ApplyServiceTest {
         assertThat(applyCreateServiceResponse.applyId()).isNotNull();
     }
 
-    @DisplayName("사용자가 미팅 신청 시 호스트가 정한 미팅 지속 시간에 맞지 않게 신청한 경우 예외 발생 시킨다.")
+    @DisplayName("게스트가 미팅 신청 시 호스트가 정한 미팅 지속 시간에 맞지 않게 신청한 경우 예외 발생 시킨다.")
     @Test
     void applyAppointment2() {
         // given
@@ -97,7 +97,7 @@ class ApplyServiceTest {
                 .hasMessage(ErrorMessage.INVALID_MEETING_DURATION_TIME.getPhrase());
     }
 
-    @DisplayName("사용자가 미팅 신청한 기간이 미팅 가능 시간이 아닌 경우 예외 발생 시킨다.")
+    @DisplayName("게스트가 미팅 신청한 기간이 미팅 가능 시간이 아닌 경우 예외 발생 시킨다.")
     @Test
     void applyAppointment3() {
         // given
