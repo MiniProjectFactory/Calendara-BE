@@ -29,7 +29,7 @@ public class ApplyService {
         Appointment appointment = appointmentRepository.findById(applyCreateServiceDto.appointmentId()).orElseThrow(() -> new BusinessException(ErrorMessage.NOT_FOUND_APPOINTMENT));
         LocalDateTime startTime = applyCreateServiceDto.meetingStartTime();
         LocalDateTime endTime = applyCreateServiceDto.meetingEndTime();
-        
+
         verifyApplyTime(startTime, endTime, appointment);
         verifyAvailableTime(appointment, startTime, endTime);
 
@@ -55,7 +55,7 @@ public class ApplyService {
         });
 
         if (!containAvailableTimeResult) {
-            throw new BusinessException(ErrorMessage.INVALID_AVAILABLE_TIME);
+            throw new BusinessException(ErrorMessage.INVALID_APPLY_TIME);
         }
     }
 
