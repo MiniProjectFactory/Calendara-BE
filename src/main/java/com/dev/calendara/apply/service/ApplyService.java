@@ -39,7 +39,6 @@ public class ApplyService {
                 .memberId(applyCreateServiceDto.memberId())
                 .applyEndTime(applyCreateServiceDto.meetingEndTime())
                 .applyStartTime(applyCreateServiceDto.meetingStartTime())
-                .confirmYn("N")
                 .applyStatus(ApplyStatus.WAIT)
                 .build();
         Apply savedApply = applyRepository.save(apply);

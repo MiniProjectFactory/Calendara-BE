@@ -24,8 +24,6 @@ public class Apply {
 
     private Long memberId;
 
-    private String confirmYn;
-
     @Enumerated(EnumType.STRING)
     private ApplyStatus applyStatus;
 
@@ -34,11 +32,10 @@ public class Apply {
     private Appointment appointment;
 
     @Builder
-    public Apply(LocalDateTime applyStartTime, LocalDateTime applyEndTime, Long memberId, String confirmYn, Appointment appointment, ApplyStatus applyStatus) {
+    public Apply(LocalDateTime applyStartTime, LocalDateTime applyEndTime, Long memberId, Appointment appointment, ApplyStatus applyStatus) {
         this.applyStartTime = applyStartTime;
         this.applyEndTime = applyEndTime;
         this.memberId = memberId;
-        this.confirmYn = confirmYn;
         this.applyStatus = applyStatus;
         addApply(appointment);
     }
