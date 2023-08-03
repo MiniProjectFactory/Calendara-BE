@@ -1,6 +1,6 @@
 package com.dev.calendara.apply.service.dto;
 
-import com.dev.calendara.apply.Apply;
+import com.dev.calendara.apply.domain.Apply;
 
 public record ApplyCreateServiceResponse(
         Long applyId

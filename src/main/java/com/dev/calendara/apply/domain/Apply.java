@@ -1,5 +1,6 @@
-package com.dev.calendara.apply;
+package com.dev.calendara.apply.domain;
 
+import com.dev.calendara.apply.domain.enumeration.ApplyStatus;
 import com.dev.calendara.appointment.Appointment;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -25,18 +26,23 @@ public class Apply {
 
     private String confirmYn;
 
+    @Enumerated(EnumType.STRING)
+    private ApplyStatus applyStatus;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "appointment_id")
     private Appointment appointment;
 
     @Builder
-    public Apply(LocalDateTime applyStartTime, LocalDateTime applyEndTime, Long memberId, String confirmYn, Appointment appointment) {
+    public Apply(LocalDateTime applyStartTime, LocalDateTime applyEndTime, Long memberId, String confirmYn, Appointment appointment, ApplyStatus applyStatus) {
         this.applyStartTime = applyStartTime;
         this.applyEndTime = applyEndTime;
         this.memberId = memberId;
         this.confirmYn = confirmYn;
+        this.applyStatus = applyStatus;
         addApply(appointment);
     }
+
 
     public void addApply(Appointment appointment) {
         if (this.appointment != null) {

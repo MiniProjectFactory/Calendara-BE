@@ -1,6 +1,7 @@
 package com.dev.calendara.apply.service;
 
-import com.dev.calendara.apply.Apply;
+import com.dev.calendara.apply.domain.Apply;
+import com.dev.calendara.apply.domain.enumeration.ApplyStatus;
 import com.dev.calendara.apply.repository.ApplyRepository;
 import com.dev.calendara.apply.service.dto.ApplyCreateServiceRequest;
 import com.dev.calendara.apply.service.dto.ApplyCreateServiceResponse;
@@ -39,6 +40,7 @@ public class ApplyService {
                 .applyEndTime(applyCreateServiceDto.meetingEndTime())
                 .applyStartTime(applyCreateServiceDto.meetingStartTime())
                 .confirmYn("N")
+                .applyStatus(ApplyStatus.WAIT)
                 .build();
         Apply savedApply = applyRepository.save(apply);
 
