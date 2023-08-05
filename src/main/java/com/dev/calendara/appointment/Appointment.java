@@ -1,16 +1,10 @@
 package com.dev.calendara.appointment;
 
-import com.dev.calendara.apply.Apply;
+import com.dev.calendara.apply.domain.Apply;
 import com.dev.calendara.availabletimes.AvailableTime;
 import com.dev.calendara.common.exception.custom.BusinessException;
 import com.dev.calendara.common.exception.dto.ErrorMessage;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -67,5 +61,9 @@ public class Appointment {
 
     public void addAvailableTime(AvailableTime availableTime) {
         availableTimes.add(availableTime);
+    }
+
+    public void addApply(Apply apply) {
+        applies.add(apply);
     }
 }

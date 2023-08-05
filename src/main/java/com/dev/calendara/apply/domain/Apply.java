@@ -1,14 +1,10 @@
-package com.dev.calendara.apply;
+package com.dev.calendara.apply.domain;
 
+import com.dev.calendara.apply.domain.enumeration.ApplyStatus;
 import com.dev.calendara.appointment.Appointment;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -26,19 +22,30 @@ public class Apply {
 
     private LocalDateTime applyEndTime;
 
-    private Long userId;
+    private Long memberId;
 
-    private String confirmYn;
+    @Enumerated(EnumType.STRING)
+    private ApplyStatus applyStatus;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "appointment_id")
     private Appointment appointment;
 
-    public void applyAppointment(Appointment appointment) {
+    @Builder
+    public Apply(LocalDateTime applyStartTime, LocalDateTime applyEndTime, Long memberId, Appointment appointment, ApplyStatus applyStatus) {
+        this.applyStartTime = applyStartTime;
+        this.applyEndTime = applyEndTime;
+        this.memberId = memberId;
+        this.applyStatus = applyStatus;
+        addApply(appointment);
+    }
+
+
+    public void addApply(Appointment appointment) {
         if (this.appointment != null) {
             this.appointment.getApplies().remove(this);
         }
         this.appointment = appointment;
-        appointment.getApplies().add(this);
+        appointment.addApply(this);
     }
 }

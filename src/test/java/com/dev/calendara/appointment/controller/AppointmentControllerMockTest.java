@@ -46,7 +46,7 @@ class AppointmentControllerMockTest {
     void createAppointment() throws Exception {
         // Given
         Appointment appointment = new Appointment("test", 3L, 30, LocalDate.of(2023, 7, 22), LocalDate.of(2023, 7, 30));
-        AvailableTime availableTime = new AvailableTime(LocalDateTime.of(2023, 7, 24, 10, 0), LocalDateTime.of(2023, 7, 24, 12, 0));
+        AvailableTime availableTime = new AvailableTime(LocalDateTime.of(2023, 7, 23, 12, 0), LocalDateTime.of(2023, 7, 23, 19, 0));
         availableTime.addAvailableTime(appointment);
         AppointmentCreateResponse createResponse = AppointmentCreateResponse.of(appointment);
         when(appointmentService.createAppointment(any())).thenReturn(createResponse);
