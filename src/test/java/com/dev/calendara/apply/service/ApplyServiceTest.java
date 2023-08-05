@@ -1,12 +1,19 @@
 package com.dev.calendara.apply.service;
 
+import com.dev.calendara.apply.controller.dto.ApplyListRequest;
+import com.dev.calendara.apply.domain.Apply;
+import com.dev.calendara.apply.domain.enumeration.ApplyStatus;
 import com.dev.calendara.apply.service.dto.ApplyCreateServiceRequest;
 import com.dev.calendara.apply.service.dto.ApplyCreateServiceResponse;
+import com.dev.calendara.apply.service.dto.AppointmentApplyListResponse;
 import com.dev.calendara.appointment.Appointment;
 import com.dev.calendara.appointment.repository.AppointmentRepository;
 import com.dev.calendara.availabletimes.AvailableTime;
 import com.dev.calendara.common.exception.custom.BusinessException;
 import com.dev.calendara.common.exception.dto.ErrorMessage;
+import com.dev.calendara.member.Member;
+import com.dev.calendara.member.dto.MemberResponse;
+import com.dev.calendara.member.repository.MemberRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +24,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @ActiveProfiles("test")
@@ -33,6 +42,9 @@ class ApplyServiceTest {
 
     @MockBean
     private AppointmentRepository appointmentRepository;
+
+    @MockBean
+    private MemberRepository memberRepository;
 
     @DisplayName("게스트가 미팅 정보를 작성 후 신청할 수 있다.")
     @Test
@@ -128,5 +140,34 @@ class ApplyServiceTest {
                 "미팅 신청 시간이 미팅 가능 기간 내에 포함되지 않는 경우")
                 .isInstanceOf(BusinessException.class)
                 .hasMessage(ErrorMessage.INVALID_APPLY_TIME.getPhrase());
+    }
+
+    @Test
+    @DisplayName("호스트가 오픈한 미팅에 대해서 신청한 내역을 가져온다.")
+    void getAppointmentApplyList() {
+        // given
+        ApplyListRequest applyListRequest = new ApplyListRequest(1L, 1L);
+        int meetingDuration = 30;
+        Appointment appointment = Appointment.builder()
+                .hostId(1L)
+                .meetingDuration(meetingDuration)
+                .meetingStartDate(LocalDate.of(2023, 8, 1))
+                .meetingEndDate(LocalDate.of(2023, 8, 10))
+                .title("test")
+                .build();
+        Apply apply = Apply.builder().appointment(appointment).applyStatus(ApplyStatus.WAIT).applyStartTime(LocalDateTime.of(2023, 8, 3, 19, 0)).applyEndTime(LocalDateTime.of(2023, 8, 3, 19, 30)).memberId(1L).build();
+        Member member = new Member("test", "test@test.com");
+        when(appointmentRepository.findByIdAndHostIdAndApplyStatus(any(Long.class), any(Long.class), eq(ApplyStatus.WAIT))).thenReturn(Optional.of(appointment));
+        when(memberRepository.findById(any(Long.class))).thenReturn(Optional.of(member));
+
+        // when
+        List<AppointmentApplyListResponse> appointmentApplyList = applyService.getAppointmentApplyList(applyListRequest);
+
+        // then
+        assertThat(appointmentApplyList).hasSize(1)
+                .extracting("applyStatus", "applyStartTime", "applyEndTime", "title", "member")
+                .containsExactlyInAnyOrder(
+                        tuple(apply.getApplyStatus(), apply.getApplyStartTime(), apply.getApplyEndTime(), appointment.getTitle(), new MemberResponse(member.getName(), member.getEmail()))
+                );
     }
 }

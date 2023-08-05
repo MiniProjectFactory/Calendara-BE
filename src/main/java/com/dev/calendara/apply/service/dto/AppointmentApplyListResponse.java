@@ -10,5 +10,5 @@ public record AppointmentApplyListResponse(Long applyId,
                                            LocalDateTime applyStartTime,
                                            LocalDateTime applyEndTime,
                                            String title,
-                                           MemberResponse memberId) {
+                                           MemberResponse member) {
 }
