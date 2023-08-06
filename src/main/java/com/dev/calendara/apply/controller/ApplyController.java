@@ -6,6 +6,7 @@ import com.dev.calendara.apply.controller.dto.ApplyListRequest;
 import com.dev.calendara.apply.service.ApplyService;
 import com.dev.calendara.apply.service.dto.ApplyCreateServiceResponse;
 import com.dev.calendara.apply.service.dto.ApplyDecisionResponse;
+import com.dev.calendara.apply.service.dto.ApplyResponse;
 import com.dev.calendara.apply.service.dto.AppointmentApplyListResponse;
 import com.dev.calendara.common.response.dto.BaseResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -33,5 +34,10 @@ public class ApplyController {
     @PatchMapping("/apply")
     public BaseResponseDto<ApplyDecisionResponse> decisionApply(@RequestBody ApplyDecisionRequest applyDecisionRequest) {
         return BaseResponseDto.ok(applyService.decisionApply(applyDecisionRequest));
+    }
+
+    @GetMapping("/apply")
+    public BaseResponseDto<List<ApplyResponse>> findAllByGuestId(@RequestParam Long guestId) {
+        return BaseResponseDto.ok(applyService.findAllByGuestId(guestId));
     }
 }

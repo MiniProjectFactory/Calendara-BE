@@ -4,10 +4,8 @@ import com.dev.calendara.apply.controller.dto.ApplyDecisionRequest;
 import com.dev.calendara.apply.controller.dto.ApplyListRequest;
 import com.dev.calendara.apply.domain.Apply;
 import com.dev.calendara.apply.domain.enumeration.ApplyStatus;
-import com.dev.calendara.apply.service.dto.ApplyCreateServiceRequest;
-import com.dev.calendara.apply.service.dto.ApplyCreateServiceResponse;
-import com.dev.calendara.apply.service.dto.ApplyDecisionResponse;
-import com.dev.calendara.apply.service.dto.AppointmentApplyListResponse;
+import com.dev.calendara.apply.repository.ApplyRepository;
+import com.dev.calendara.apply.service.dto.*;
 import com.dev.calendara.appointment.Appointment;
 import com.dev.calendara.appointment.repository.AppointmentRepository;
 import com.dev.calendara.availabletimes.AvailableTime;
@@ -48,6 +46,9 @@ class ApplyServiceTest {
 
     @MockBean
     private MemberRepository memberRepository;
+
+    @MockBean
+    private ApplyRepository applyRepository;
 
     @DisplayName("게스트가 미팅 정보를 작성 후 신청할 수 있다.")
     @Test
@@ -195,5 +196,36 @@ class ApplyServiceTest {
 
         // then
         assertThat(applyDecisionResponse.applyStatus()).isEqualTo(ApplyStatus.APPROVE);
+    }
+
+    @Test
+    @DisplayName("게스트가 신청한 미팅을 호스트가 승인/반려처리 한다.")
+    void findAllByGuestId() {
+        // given
+        LocalDateTime startTime = LocalDateTime.of(2023, 8, 6, 14, 0);
+        Appointment appointment = Appointment.builder()
+                .hostId(1L)
+                .meetingDuration(30)
+                .meetingStartDate(LocalDate.of(2023, 8, 1))
+                .meetingEndDate(LocalDate.of(2023, 8, 30))
+                .title("test")
+                .build();
+        Apply apply1 = Apply.builder().appointment(appointment).applyStartTime(startTime).applyEndTime(startTime.plusMinutes(30)).memberId(1L).applyStatus(ApplyStatus.APPROVE).build();
+        Apply apply2 = Apply.builder().appointment(appointment).applyStartTime(startTime).applyEndTime(startTime.plusMinutes(30)).memberId(1L).applyStatus(ApplyStatus.REJECT).build();
+        ReflectionTestUtils.setField(apply1, "id", 1L);
+        ReflectionTestUtils.setField(apply2, "id", 2L);
+
+        when(applyRepository.findAllByMemberIdAndApplyStatusNot(1L, ApplyStatus.WAIT)).thenReturn(List.of(apply1, apply2));
+
+        // when
+        List<ApplyResponse> applyResponses = applyService.findAllByGuestId(1L);
+
+        // then
+        assertThat(applyResponses).hasSize(2)
+                .extracting("applyId", "applyStartTime", "applyEndTime", "guestId", "applyStatus")
+                .containsExactlyInAnyOrder(
+                        tuple(apply1.getId(), apply1.getApplyStartTime(), apply1.getApplyEndTime(), apply1.getMemberId(), apply1.getApplyStatus()),
+                        tuple(apply2.getId(), apply2.getApplyStartTime(), apply2.getApplyEndTime(), apply2.getMemberId(), apply2.getApplyStatus())
+                );
     }
 }

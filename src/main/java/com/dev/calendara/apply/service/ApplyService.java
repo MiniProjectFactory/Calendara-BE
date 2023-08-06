@@ -5,10 +5,7 @@ import com.dev.calendara.apply.controller.dto.ApplyListRequest;
 import com.dev.calendara.apply.domain.Apply;
 import com.dev.calendara.apply.domain.enumeration.ApplyStatus;
 import com.dev.calendara.apply.repository.ApplyRepository;
-import com.dev.calendara.apply.service.dto.ApplyCreateServiceRequest;
-import com.dev.calendara.apply.service.dto.ApplyCreateServiceResponse;
-import com.dev.calendara.apply.service.dto.ApplyDecisionResponse;
-import com.dev.calendara.apply.service.dto.AppointmentApplyListResponse;
+import com.dev.calendara.apply.service.dto.*;
 import com.dev.calendara.appointment.Appointment;
 import com.dev.calendara.appointment.repository.AppointmentRepository;
 import com.dev.calendara.availabletimes.AvailableTime;
@@ -104,5 +101,11 @@ public class ApplyService {
         Apply findApply = appointment.getApplies().stream().filter(apply -> Objects.equals(apply.getId(), applyDecisionRequest.applyId())).findFirst().orElseThrow(() -> new BusinessException(ErrorMessage.NOT_FOUND_APPLY_HISTORY));
         findApply.changeApplyStatus(applyDecisionRequest.applyStatus());
         return new ApplyDecisionResponse(findApply.getId(), findApply.getApplyStatus());
+    }
+
+    @Transactional(readOnly = true)
+    public List<ApplyResponse> findAllByGuestId(Long guestId) {
+        List<Apply> applyList = applyRepository.findAllByMemberIdAndApplyStatusNot(guestId, ApplyStatus.WAIT);
+        return applyList.stream().map(ApplyResponse::of).toList();
     }
 }
