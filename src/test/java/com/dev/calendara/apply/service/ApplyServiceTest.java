@@ -1,10 +1,12 @@
 package com.dev.calendara.apply.service;
 
+import com.dev.calendara.apply.controller.dto.ApplyDecisionRequest;
 import com.dev.calendara.apply.controller.dto.ApplyListRequest;
 import com.dev.calendara.apply.domain.Apply;
 import com.dev.calendara.apply.domain.enumeration.ApplyStatus;
 import com.dev.calendara.apply.service.dto.ApplyCreateServiceRequest;
 import com.dev.calendara.apply.service.dto.ApplyCreateServiceResponse;
+import com.dev.calendara.apply.service.dto.ApplyDecisionResponse;
 import com.dev.calendara.apply.service.dto.AppointmentApplyListResponse;
 import com.dev.calendara.appointment.Appointment;
 import com.dev.calendara.appointment.repository.AppointmentRepository;
@@ -20,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
@@ -169,5 +172,28 @@ class ApplyServiceTest {
                 .containsExactlyInAnyOrder(
                         tuple(apply.getApplyStatus(), apply.getApplyStartTime(), apply.getApplyEndTime(), appointment.getTitle(), new MemberResponse(member.getName(), member.getEmail()))
                 );
+    }
+
+    @Test
+    @DisplayName("게스트가 신청한 미팅을 호스트가 승인/반려처리 한다.")
+    void decisionApply() {
+        // given
+        ApplyDecisionRequest applyDecisionRequest = new ApplyDecisionRequest(1L, 1L, ApplyStatus.APPROVE);
+        Appointment appointment = Appointment.builder()
+                .hostId(1L)
+                .meetingDuration(30)
+                .meetingStartDate(LocalDate.of(2023, 8, 1))
+                .meetingEndDate(LocalDate.of(2023, 8, 10))
+                .title("test")
+                .build();
+        Apply apply = Apply.builder().applyStatus(ApplyStatus.WAIT).applyStartTime(LocalDateTime.of(2023, 8, 3, 12, 0)).applyEndTime(LocalDateTime.of(2023, 8, 3, 12, 30)).appointment(appointment).build();
+        ReflectionTestUtils.setField(apply, "id", 1L);
+        when(appointmentRepository.findByHostIdAndApplyId(any(), any())).thenReturn(Optional.of(appointment));
+
+        // when
+        ApplyDecisionResponse applyDecisionResponse = applyService.decisionApply(applyDecisionRequest);
+
+        // then
+        assertThat(applyDecisionResponse.applyStatus()).isEqualTo(ApplyStatus.APPROVE);
     }
 }

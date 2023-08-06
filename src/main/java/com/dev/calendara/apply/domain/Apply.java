@@ -40,12 +40,15 @@ public class Apply {
         addApply(appointment);
     }
 
-
     public void addApply(Appointment appointment) {
         if (this.appointment != null) {
             this.appointment.getApplies().remove(this);
         }
         this.appointment = appointment;
         appointment.addApply(this);
+    }
+
+    public void changeApplyStatus(ApplyStatus applyStatus) {
+        this.applyStatus = applyStatus;
     }
 }

@@ -1,11 +1,13 @@
 package com.dev.calendara.apply.service;
 
+import com.dev.calendara.apply.controller.dto.ApplyDecisionRequest;
 import com.dev.calendara.apply.controller.dto.ApplyListRequest;
 import com.dev.calendara.apply.domain.Apply;
 import com.dev.calendara.apply.domain.enumeration.ApplyStatus;
 import com.dev.calendara.apply.repository.ApplyRepository;
 import com.dev.calendara.apply.service.dto.ApplyCreateServiceRequest;
 import com.dev.calendara.apply.service.dto.ApplyCreateServiceResponse;
+import com.dev.calendara.apply.service.dto.ApplyDecisionResponse;
 import com.dev.calendara.apply.service.dto.AppointmentApplyListResponse;
 import com.dev.calendara.appointment.Appointment;
 import com.dev.calendara.appointment.repository.AppointmentRepository;
@@ -23,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -94,5 +97,12 @@ public class ApplyService {
                             new MemberResponse(member.getName(), member.getEmail()));
                 })
                 .toList();
+    }
+
+    public ApplyDecisionResponse decisionApply(ApplyDecisionRequest applyDecisionRequest) {
+        Appointment appointment = appointmentRepository.findByHostIdAndApplyId(applyDecisionRequest.hostId(), applyDecisionRequest.applyId()).orElseThrow(() -> new BusinessException(ErrorMessage.NOT_FOUND_APPLY_HISTORY));
+        Apply findApply = appointment.getApplies().stream().filter(apply -> Objects.equals(apply.getId(), applyDecisionRequest.applyId())).findFirst().orElseThrow(() -> new BusinessException(ErrorMessage.NOT_FOUND_APPLY_HISTORY));
+        findApply.changeApplyStatus(applyDecisionRequest.applyStatus());
+        return new ApplyDecisionResponse(findApply.getId(), findApply.getApplyStatus());
     }
 }

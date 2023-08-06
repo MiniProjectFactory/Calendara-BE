@@ -1,9 +1,11 @@
 package com.dev.calendara.apply.controller;
 
 import com.dev.calendara.apply.controller.dto.ApplyCreateRequest;
+import com.dev.calendara.apply.controller.dto.ApplyDecisionRequest;
 import com.dev.calendara.apply.controller.dto.ApplyListRequest;
 import com.dev.calendara.apply.service.ApplyService;
 import com.dev.calendara.apply.service.dto.ApplyCreateServiceResponse;
+import com.dev.calendara.apply.service.dto.ApplyDecisionResponse;
 import com.dev.calendara.apply.service.dto.AppointmentApplyListResponse;
 import com.dev.calendara.common.response.dto.BaseResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -26,5 +28,10 @@ public class ApplyController {
     @GetMapping("/apply/{appointmentId}")
     public BaseResponseDto<List<AppointmentApplyListResponse>> getAppointmentApplyList(@PathVariable Long appointmentId, @RequestParam Long memberId) {
         return BaseResponseDto.ok(applyService.getAppointmentApplyList(new ApplyListRequest(appointmentId, memberId)));
+    }
+
+    @PatchMapping("/apply")
+    public BaseResponseDto<ApplyDecisionResponse> decisionApply(@RequestBody ApplyDecisionRequest applyDecisionRequest) {
+        return BaseResponseDto.ok(applyService.decisionApply(applyDecisionRequest));
     }
 }
