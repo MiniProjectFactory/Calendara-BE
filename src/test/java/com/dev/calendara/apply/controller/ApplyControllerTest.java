@@ -3,11 +3,14 @@ package com.dev.calendara.apply.controller;
 import com.dev.calendara.apply.controller.dto.ApplyCreateRequest;
 import com.dev.calendara.apply.controller.dto.ApplyDecisionRequest;
 import com.dev.calendara.apply.controller.dto.ApplyListRequest;
+import com.dev.calendara.apply.domain.Apply;
 import com.dev.calendara.apply.domain.enumeration.ApplyStatus;
 import com.dev.calendara.apply.service.ApplyService;
 import com.dev.calendara.apply.service.dto.ApplyCreateServiceResponse;
 import com.dev.calendara.apply.service.dto.ApplyDecisionResponse;
+import com.dev.calendara.apply.service.dto.ApplyResponse;
 import com.dev.calendara.apply.service.dto.AppointmentApplyListResponse;
+import com.dev.calendara.appointment.Appointment;
 import com.dev.calendara.member.dto.MemberResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
@@ -18,12 +21,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -120,6 +126,41 @@ class ApplyControllerTest {
                 .andExpect(jsonPath("$.message").value("SUCCESS"))
                 .andExpect(jsonPath("$.data.applyId").value(1))
                 .andExpect(jsonPath("$.data.applyStatus").value(ApplyStatus.APPROVE.toString()))
+        ;
+    }
+
+    @Test
+    @DisplayName("게스트가 신청한 내역 중 승인/반려 처리 된 내역들을 확인할 수 있다.")
+    void findAllByGuestId() throws Exception {
+        // Given
+        LocalDateTime startTime = LocalDateTime.of(2023, 8, 6, 14, 0);
+        Appointment appointment = Appointment.builder()
+                .hostId(1L)
+                .meetingDuration(30)
+                .meetingStartDate(LocalDate.of(2023, 8, 1))
+                .meetingEndDate(LocalDate.of(2023, 8, 30))
+                .title("test")
+                .build();
+        Apply apply1 = Apply.builder().appointment(appointment).applyStartTime(startTime).applyEndTime(startTime.plusMinutes(30)).memberId(1L).applyStatus(ApplyStatus.APPROVE).build();
+        ReflectionTestUtils.setField(apply1, "id", 1L);
+        ApplyResponse applyResponse = ApplyResponse.of(apply1);
+        when(applyService.findAllByGuestId(any(Long.class))).thenReturn(List.of(applyResponse));
+
+        // When Then
+        mockMvc.perform(
+                        get("/api/v1/apply")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .param("guestId", "1")
+                )
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("200"))
+                .andExpect(jsonPath("$.message").value("SUCCESS"))
+                .andExpect(jsonPath("$.data[0].applyId").value(1))
+                .andExpect(jsonPath("$.data[0].applyStatus").value(ApplyStatus.APPROVE.toString()))
+                .andExpect(jsonPath("$.data[0].applyStartTime").value(applyResponse.applyStartTime().toString()))
+                .andExpect(jsonPath("$.data[0].applyEndTime").value(applyResponse.applyEndTime().toString()))
+                .andExpect(jsonPath("$.data[0].guestId").value(applyResponse.guestId()))
         ;
     }
 }

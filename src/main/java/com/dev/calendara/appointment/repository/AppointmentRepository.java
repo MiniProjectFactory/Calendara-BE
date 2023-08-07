@@ -14,4 +14,5 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
 
     @Query("select a from Appointment a join fetch a.applies ap where a.hostId=:hostId and ap.id=:applyId")
     Optional<Appointment> findByHostIdAndApplyId(Long hostId, Long applyId);
+
 }
