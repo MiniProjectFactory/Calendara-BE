@@ -15,6 +15,7 @@ public enum ErrorMessage {
     INVALID_APPLY_TIME(HttpStatus.BAD_REQUEST, "미팅 신청 시간은 미팅 신청 가능 시간내에 포함되어야 합니다."),
     NOT_FOUND_APPOINTMENT_FORM(HttpStatus.BAD_REQUEST, "회의 신청 정보를 찾을 수 없습니다."),
     NOT_FOUND_GUEST(HttpStatus.BAD_REQUEST, "미팅 신청한 게스트의 정보를 찾을 수 없습니다."),
+    NOT_FOUND_APPLY_HISTORY(HttpStatus.BAD_REQUEST, "미팅 신청 내역을 찾을 수 없습니다."),
     ;
     private final int code;
     private final String phrase;

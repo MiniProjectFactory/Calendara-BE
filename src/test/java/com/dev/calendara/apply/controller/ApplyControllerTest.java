@@ -1,10 +1,12 @@
 package com.dev.calendara.apply.controller;
 
 import com.dev.calendara.apply.controller.dto.ApplyCreateRequest;
+import com.dev.calendara.apply.controller.dto.ApplyDecisionRequest;
 import com.dev.calendara.apply.controller.dto.ApplyListRequest;
 import com.dev.calendara.apply.domain.enumeration.ApplyStatus;
 import com.dev.calendara.apply.service.ApplyService;
 import com.dev.calendara.apply.service.dto.ApplyCreateServiceResponse;
+import com.dev.calendara.apply.service.dto.ApplyDecisionResponse;
 import com.dev.calendara.apply.service.dto.AppointmentApplyListResponse;
 import com.dev.calendara.member.dto.MemberResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,8 +25,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -96,6 +97,29 @@ class ApplyControllerTest {
                 .andExpect(jsonPath("$.data[0].title").value("test"))
                 .andExpect(jsonPath("$.data[0].member.name").value("test"))
                 .andExpect(jsonPath("$.data[0].member.email").value("test@test.com"))
+        ;
+    }
+
+    @Test
+    @DisplayName("게스트가 신청한 미팅을 호스트가 승인/반려처리 한다.")
+    void decisionApply() throws Exception {
+        // Given
+        ApplyDecisionRequest applyDecisionRequest = new ApplyDecisionRequest(1L, 1L, ApplyStatus.APPROVE);
+        ApplyDecisionResponse applyDecisionResponse = new ApplyDecisionResponse(1L, ApplyStatus.APPROVE);
+        when(applyService.decisionApply(applyDecisionRequest)).thenReturn(applyDecisionResponse);
+
+        // When Then
+        mockMvc.perform(
+                        patch("/api/v1/apply")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(applyDecisionRequest))
+                )
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("200"))
+                .andExpect(jsonPath("$.message").value("SUCCESS"))
+                .andExpect(jsonPath("$.data.applyId").value(1))
+                .andExpect(jsonPath("$.data.applyStatus").value(ApplyStatus.APPROVE.toString()))
         ;
     }
 }
