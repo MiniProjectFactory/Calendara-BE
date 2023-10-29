@@ -46,6 +46,7 @@ public class MemberService implements UserDetailsService {
                         .email(requestDto.getEmail())
                         .name(requestDto.getName())
                         .createdAt(LocalDateTime.now())
+                        .password(passwordEncoder.encode(requestDto.getPassword()))
                         .build());
         return SignUpResponseDto.of(saved);
     }
