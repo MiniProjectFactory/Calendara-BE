@@ -24,6 +24,23 @@ spring:
       hibernate:
         format_sql: true
 
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            clientId: ${ GOOGLE_CLIENT_ID }
+            clientSecret: ${ GOOGLE_CLIENT_SECRET }
+            scope:
+              - openid
+              - profile
+              - email
+jwt:
+  custom:
+      secret: jwtSecretKey
+      token:
+        valid:
+          milliseconds: 3600000L
 ---
 spring:
   config:
@@ -46,4 +63,5 @@ spring:
   h2:
     console:
       enabled: true
+
 

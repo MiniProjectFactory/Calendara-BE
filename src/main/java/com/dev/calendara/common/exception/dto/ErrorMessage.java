@@ -7,6 +7,9 @@ import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 @Getter
 public enum ErrorMessage {
+    NOT_FOUND_MEMBER_EMAIL(HttpStatus.BAD_REQUEST, "등록되지 않은 이메일 입니다."),
+    INVALID_MEMBER_PASSWORD(HttpStatus.BAD_REQUEST, "이메일과 비밀번호가 맞지 않습니다."),
+
     INVALID_AVAILABLE_TIME(HttpStatus.BAD_REQUEST, "미팅 가능한 시간대는 미팅 기간내에 포함되어야 합니다."),
     INVALID_APPOINTMENT_DATE_RANGE(HttpStatus.BAD_REQUEST, "회의 신청 기간을 잘못 설정했습니다."),
     INVALID_MEETING_DURATION_TIME(HttpStatus.BAD_REQUEST, "미팅 지속 시간에 맞게 요청 해야 합니다."),
